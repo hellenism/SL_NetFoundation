@@ -1,27 +1,27 @@
-һ.������
-	����һ�����ݷ��ʲ�-�������ݷ��ʲ�Ŀ��.
+一.简述：
+	这是一个数据访问层-网络数据访问层的框架.
 
-��.����
-	������ʲô?
-	��һ����ȡ������Դ��һ�׿�ܡ��ͻ���ͨ�������Ի�ȡInternet�ϵ���Դ.
-	����String,���String
+二.功能
+	它能做什么?
+	是一个获取网络资源的一套框架。客户端通过它可以获取Internet上的资源.
+	输入String,输出String
 
-	��������ʲô?
-	�������м�㣬����װ����ͳһ�Ļ�ȡ������Դ�Ĳ���
+	不能能做什么?
+	它不是中间层，它封装的是统一的获取网络资源的操作
 
-��.�ص�
-	1.��������������첽�߳�
-	2.ͨ���ص���ʽ��������,���һص����������߳�
-	3.֧��Cancel
+三.特点
+	1.请求操作发生在异步线程
+	2.通过回调形式返回数据,并且回调发生在主线程
+	3.支持Cancel
 	
-��.����
-	���ϲ�,��Clientֱ�ӵ��õĶ�����:NetAction,IHttpListener,�������Ҫ�������ݷ��ʿ�ܣ����������ǲ���Ҫ���ı�ġ�
-ֻ��Ҫ�µ����ݷ��ʿ��ʵ��IHttpListener��ISend���ɡ����еĵĵ��������޸�
+四.详情
+	最上层,与Client直接调用的对象是:NetAction,IHttpListener,即如果需要更改数据访问框架，这两个类是不需要被改变的。
+只需要新的数据访问框架实现IHttpListener和ISend即可。所有的的调用无需修改
 
 
-��.API����
+五.API介绍
 	1.init
-	2.��������
+	2.创建对象
 	3.excute
 	
 
