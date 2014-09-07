@@ -19,15 +19,25 @@ package com.sl.net.interfaces;
 import java.net.HttpURLConnection;
 
 /**
- * HTTP监听
- * 
+ * @description http response callback. use this callback to notify response result
+ *  
  * @author Stephen
  *
  */
 public interface IHttpListener {
-	/** Http请求成功 */
+	/**
+	 * http request success
+	 * 
+	 * @param responseString
+	 * @param connection
+	 */
 	void httpSuccess(String responseString,HttpURLConnection connection);
 	
-	/** Http请求失败  */
+	/**
+	 * http request fail
+	 * 
+	 * @param connection
+	 * @param error
+	 */
 	void httpFail(HttpURLConnection connection, Throwable error); 
 }

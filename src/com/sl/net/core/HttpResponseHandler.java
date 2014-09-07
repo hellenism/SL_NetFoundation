@@ -13,6 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+
 package com.sl.net.core;
 
 import java.net.HttpURLConnection;
@@ -20,18 +21,16 @@ import java.net.HttpURLConnection;
 import com.sl.net.interfaces.IHttpListener;
 
 /**
- * NetFoundation的回调适配器,网络访问层的所有回调会通过此类进行适配
+ * @description HttpResponseHandler
  * 
  * @author Stephen
  *
  */
 public abstract class HttpResponseHandler implements IHttpListener {
-	// HTTP 请求成功
 	@Override
 	public void httpSuccess(String responseString, HttpURLConnection connection) {
 	}
 
-	// HTTP 请求失败
 	@Override
 	public void httpFail(HttpURLConnection connection, Throwable error) {
 	}

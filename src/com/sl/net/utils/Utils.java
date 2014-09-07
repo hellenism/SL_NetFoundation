@@ -28,16 +28,13 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-
 /**
  * @ClassName {@link Utils}
  * @Description Utils
  * @author Stephen Lee
- * @date 2014年06月17日
+ * @date 2014-9-70-22:19:23
  */
 public class Utils {
-	
-	/** default charsetName */
 	private static final String CHARSETNAME = "UTF-8";
 
 	/**
@@ -138,7 +135,7 @@ public class Utils {
 	}
 	
 	/**
-	 * 检测网络是否可用
+	 * check network available
 	 * 
 	 * @return
 	 */
@@ -190,5 +187,4 @@ public class Utils {
 	    }
 	    return -1;
 	  }
-	
 }

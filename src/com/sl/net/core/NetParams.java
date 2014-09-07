@@ -13,21 +13,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+
 package com.sl.net.core;
 
 import java.net.HttpURLConnection;
 import java.util.HashMap;
 
 /**
- * 请求相关信息的封装
- * 
- * 包括:
- * 1.HTTP Methods
- * 2.Header信息
- * 3.请求参数
+ * @description http request arg object . package http params from NetAction to
+ *              NetSender
  * 
  * @author Stephen
- *
+ * 
  */
 public class NetParams {
 	private HashMap<String, String> mRequestParams;
@@ -35,10 +32,10 @@ public class NetParams {
 	private HttpURLConnection mConnection;
 	private String mHttpMethod;
 	private String mUrlString;
-	
+
 	private int mConnectTimeout = 15000;
 	private int mReadTimeout = 15000;
-	
+
 	public NetParams(String urlString, HashMap<String, String> requestParams) {
 		mUrlString = urlString;
 		mRequestParams = requestParams;
@@ -48,7 +45,7 @@ public class NetParams {
 		this(urlString, requestParams);
 		mHeaders = headers;
 	}
-	
+
 	public int getConnectTimeout() {
 		return mConnectTimeout;
 	}
@@ -64,11 +61,11 @@ public class NetParams {
 	public void setReadTimeout(int readTimeout) {
 		this.mReadTimeout = readTimeout;
 	}
-	
+
 	public HttpURLConnection getConnection() {
 		return mConnection;
 	}
-	
+
 	public void setConnection(HttpURLConnection mConnection) {
 		this.mConnection = mConnection;
 	}
@@ -80,7 +77,7 @@ public class NetParams {
 	public void setHttpMethod(String mHttpMethod) {
 		this.mHttpMethod = mHttpMethod;
 	}
-	
+
 	public String getUrlString() {
 		return mUrlString;
 	}

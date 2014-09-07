@@ -42,11 +42,11 @@ import com.sl.net.utils.Utils;
 
 /**
  * @ClassName {@link NetSender}
- * @Description NetAction ¸¨ÖúÀà£¬ ÓÃÓÚ´´½¨Connection²¢ÇÒ·¢ÆðHttpÇëÇó
+ * @Description NetAction ï¿½ï¿½ï¿½ï¿½ï¿½à£¬ ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½Connectionï¿½ï¿½ï¿½Ò·ï¿½ï¿½ï¿½Httpï¿½ï¿½ï¿½ï¿½
  * @author Stephen Lee
  * @date 2014-06-17
  */
-public class NetSender extends AbsSender{
+public class NetSender extends AbsSender {
 
 	private static final String METHODS_POST = "POST";
 	private static final String METHODS_GET = "GET";
@@ -58,8 +58,7 @@ public class NetSender extends AbsSender{
 	private Handler mHandler;
 	private IHttpListener mHttpListener;
 
-	public NetSender(Context context,NetParams netParams,IHttpListener httpListener)
-	{
+	public NetSender(Context context, NetParams netParams, IHttpListener httpListener) {
 		mContext = context;
 		mHandler = new Handler(mContext.getMainLooper());
 		mNetParams = netParams;
@@ -75,11 +74,11 @@ public class NetSender extends AbsSender{
 			}
 		}).start();
 	}
-	
+
 	/**
-	 * ·¢ËÍÇëÇó
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 * 
-	 * ÇëÇóÏà¹ØµÄÐÅÏ¢±»·â×°µ½ÁËNetParams¶ÔÏóÖÐ
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½NetParamsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 * 
 	 * @param params
 	 */
@@ -88,10 +87,10 @@ public class NetSender extends AbsSender{
 		String responseString = EMPTY_STR;
 
 		try {
-			// Í¨¹ýSender¿ÉÒÔ»ñÈ¡µ½ÇëÇóµÄÐÅÏ¢
+			// Í¨ï¿½ï¿½Senderï¿½ï¿½ï¿½Ô»ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
 			InputStream responseInputStream = getInputStreamFactory(params);
 			responseString = Utils.InputStream2String_ByteArray(responseInputStream, CHARSETNAME);
-		} catch (MalformedURLException e) { 
+		} catch (MalformedURLException e) {
 			e.printStackTrace();
 			netException = new NetException();
 		} catch (SSLVerifyException e) {
@@ -108,7 +107,7 @@ public class NetSender extends AbsSender{
 		} catch (IOException e) {
 			e.printStackTrace();
 
-			// ÅÐ¶ÏÊÇ·ñÎªÍøÂç²»Í¨
+			// ï¿½Ð¶ï¿½ï¿½Ç·ï¿½Îªï¿½ï¿½ï¿½ç²»Í¨
 			if (!Utils.checkNetWorkAvailable(mContext)) {
 				netException = new NetException();
 				netException.setmExceptionCode(ExceptionConstants.NETWORKDISABLE);
@@ -119,17 +118,41 @@ public class NetSender extends AbsSender{
 		} finally {
 			if (null != netException) {
 				onHttpFail(params.getConnection(), netException);
+				showLog(params,"onHttpFail:" + netException.getMessage());
 			} else {
 				onHttpSuccess(responseString, params.getConnection());
+				showLog(params,"onHttpSuccess:" + responseString);
 			}
 		}
 	}
 	
 	/**
+	 * ï¿½ï¿½Ó¡ï¿½ï¿½Ö¾
+	 * 
+	 * @param params
+	 * @param other
+	 */
+	private void showLog(NetParams params,String other)
+	{
+		if (NetAction.getDebugModel()) {
+			try {
+				LogUtilsNetFoundation.Log("Http Method:" + params.getHttpMethod());
+				LogUtilsNetFoundation.Log("connection.getResponseCode():"
+						+ params.getConnection().getResponseCode());
+				LogUtilsNetFoundation.Log("connection.getResponseMessage()"
+						+ params.getConnection().getResponseMessage());
+				LogUtilsNetFoundation.Log(other);
+			} catch (Exception e) {
+				// ignore
+			}
+		}
+	}
+
+	/**
 	 * Get response data from connection , this is a factory thought NetParams
 	 * object to decided HTTP Method
 	 * 
-	 * ´«ÈëNetParams¶ÔÏó£¬·¢ÆðÇëÇó£¬»ñÈ¡InputStream , ÊÇÒ»¸ö¼òµ¥µÄ¹¤³§£¬Í¨¹ýParamsÖÐÐ¯´øµÄMethods²ÎÊýÑ¡Ôñµ÷ÓÃµÄ·½·¨
+	 * ï¿½ï¿½ï¿½ï¿½NetParamsï¿½ï¿½ï¿½ó£¬·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ó£¬»ï¿½È¡InputStream , ï¿½ï¿½Ò»ï¿½ï¿½ï¿½òµ¥µÄ¹ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½Paramsï¿½ï¿½Ð¯ï¿½ï¿½ï¿½ï¿½Methodsï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ÃµÄ·ï¿½ï¿½ï¿½
 	 * 
 	 * @param urlString
 	 * @return
@@ -140,16 +163,16 @@ public class NetSender extends AbsSender{
 	public InputStream getInputStreamFactory(NetParams params) throws MalformedURLException, IOException,
 			SSLVerifyException {
 		InputStream inputStream = null;
-		
+
 		if (METHODS_POST.equalsIgnoreCase(params.getHttpMethod())) {
 			inputStream = getInputSreamByPost(params);
-		} else if(METHODS_GET.equalsIgnoreCase(params.getHttpMethod())){
+		} else if (METHODS_GET.equalsIgnoreCase(params.getHttpMethod())) {
 			inputStream = getInputSreamByGet(params);
 		}
 
 		return inputStream;
 	}
-	
+
 	/**
 	 * Get inputstream by [GET] method
 	 * 
@@ -160,7 +183,6 @@ public class NetSender extends AbsSender{
 	 */
 	public InputStream getInputSreamByGet(NetParams params) throws MalformedURLException, IOException,
 			SecurityException {
-		String httpMethod = "GET";
 		String urlString = params.getUrlString();
 		HashMap<String, String> queryParams = params.getRequestParams();
 		URL url = createGetMethodURL(urlString, queryParams);
@@ -172,9 +194,6 @@ public class NetSender extends AbsSender{
 		connection.setDoInput(true);
 		connection.setDoOutput(true);
 		connection.connect();
-		LogUtilsNetFoundation.Log("Http Method:" + httpMethod);
-		LogUtilsNetFoundation.Log("connection.getResponseCode():" + connection.getResponseCode());
-		LogUtilsNetFoundation.Log("connection.getResponseMessage()" + connection.getResponseMessage());
 		params.setConnection(connection);
 		return connection.getInputStream();
 	}
@@ -190,7 +209,6 @@ public class NetSender extends AbsSender{
 	 */
 	public InputStream getInputSreamByPost(NetParams params) throws MalformedURLException, IOException,
 			SSLVerifyException, SecurityException {
-		String httpMethod = "POST";
 		String urlString = params.getUrlString();
 
 		HashMap<String, String> queryParams = params.getRequestParams();
@@ -200,7 +218,7 @@ public class NetSender extends AbsSender{
 		String queryString = createQueryString(queryParams);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-		// ÉèÖÃHTTP Headers
+		// ï¿½ï¿½ï¿½ï¿½HTTP Headers
 		if (null != headers && headers.size() != 0) {
 			for (Map.Entry<String, String> entry : headers.entrySet()) {
 				String key = entry.getKey() != null ? entry.getKey() : Constants.EMPTY_STR;
@@ -234,16 +252,13 @@ public class NetSender extends AbsSender{
 				outputStream.close();
 			}
 		}
-		LogUtilsNetFoundation.Log("Http Method:" + httpMethod);
-		LogUtilsNetFoundation.Log("connection.getResponseCode():" + connection.getResponseCode());
-		LogUtilsNetFoundation.Log("connection.getResponseMessage()" + connection.getResponseMessage());
 		params.setConnection(connection);
 		return connection.getInputStream();
 	}
 
 	// ------ private methods ------
 	/**
-	 * ´´½¨URL¶ÔÏó
+	 * ï¿½ï¿½ï¿½ï¿½URLï¿½ï¿½ï¿½ï¿½
 	 * 
 	 * @param urlString
 	 * @param queryParams
@@ -275,7 +290,7 @@ public class NetSender extends AbsSender{
 	}
 
 	/**
-	 * ´´½¨²éÑ¯×Ö·û´®
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¯ï¿½Ö·ï¿½ï¿½ï¿½
 	 * 
 	 * @param queryParams
 	 * @return
@@ -304,7 +319,7 @@ public class NetSender extends AbsSender{
 	}
 
 	@Override
-	public InputStream getInputStream(String urlString, HashMap<String, String> queryParams) {
+	public InputStream getResponseInputStream(String urlString, HashMap<String, String> queryParams) {
 		return null;
 	}
 
@@ -312,9 +327,9 @@ public class NetSender extends AbsSender{
 	public String getResponseString(String urlString, HashMap<String, String> queryParams) {
 		return null;
 	}
-	
+
 	/**
-	 * HTTPÇëÇó³É¹¦
+	 * HTTPï¿½ï¿½ï¿½ï¿½É¹ï¿½
 	 * 
 	 * @param responseString
 	 * @param connection
@@ -324,7 +339,7 @@ public class NetSender extends AbsSender{
 			mHandler.post(new Runnable() {
 				@Override
 				public void run() {
-					// »Øµ÷·¢ÉúÔÚUIÏß³Ì
+					// ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½UIï¿½ß³ï¿½
 					mHttpListener.httpSuccess(responseString, connection);
 				}
 			});
@@ -332,7 +347,7 @@ public class NetSender extends AbsSender{
 	}
 
 	/**
-	 * HTTPÇëÇóÊ§°Ü
+	 * HTTPï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½
 	 * 
 	 * @param connection
 	 * @param error
@@ -342,7 +357,7 @@ public class NetSender extends AbsSender{
 			mHandler.post(new Runnable() {
 				@Override
 				public void run() {
-					// »Øµ÷·¢ÉúÔÚUIÏß³Ì
+					// ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½UIï¿½ß³ï¿½
 					mHttpListener.httpFail(connection, error);
 				}
 			});

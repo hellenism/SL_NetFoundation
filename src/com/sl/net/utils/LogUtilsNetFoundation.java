@@ -20,12 +20,9 @@ import com.sl.net.core.NetAction;
 import android.util.Log;
 
 /**
- * NetFoundation的Log辅助类
- * 
- * 如果所有组件组成一个项目，则可以把继承此类
+ * NetFoundation Log Helper
  * 
  * @author Stephen
- *
  */
 public class LogUtilsNetFoundation {
 	public static final boolean IS_SHOW_LOG = NetAction.getDebugModel();

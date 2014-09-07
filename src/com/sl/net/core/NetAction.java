@@ -22,7 +22,7 @@ import android.content.Context;
 import com.sl.net.interfaces.IHttpListener;
 
 /**
- * NetFoundation的最上层，它是网络访问层与外界的直接交互对象，请求将通过此类的对象发起
+ * @description be used to create http request
  * 
  * @author Stephen
  * 
@@ -73,9 +73,8 @@ public class NetAction extends NetActionBase {
 	}
 
 	/**
-	 * @descrption 设置是否为调试模式
-	 * 
-	 * @note 仅影响日志输出
+	 * set debug model . if debug model is true , you can get log message on
+	 * LogCat
 	 * 
 	 * @param isDebug
 	 */
@@ -88,7 +87,7 @@ public class NetAction extends NetActionBase {
 	}
 
 	/**
-	 * 初始化
+	 * init NetAction
 	 * 
 	 * @param httpMethod
 	 * @param connectTimeout
@@ -101,7 +100,7 @@ public class NetAction extends NetActionBase {
 	}
 
 	/**
-	 * 执行网络请求
+	 * send http request
 	 * 
 	 * @param urlString
 	 * @param queryParams
@@ -112,13 +111,14 @@ public class NetAction extends NetActionBase {
 		params.setReadTimeout(mReadTimeout);
 		params.setHttpMethod(mHttpMethod);
 
-		// 以后想扩展，就直接扩展Sender即可
+		// if want to change data access layer fundation , need create a new
+		// Sender , it need to implements ISend
 		mSender = new NetSender(mContext, params, mHttpListener);
 		mSender.send();
 	}
 
 	/**
-	 * 执行网络请求
+	 * send http request , you can add http headers
 	 * 
 	 * @param urlString
 	 * @param queryParams
@@ -131,7 +131,8 @@ public class NetAction extends NetActionBase {
 		params.setReadTimeout(mReadTimeout);
 		params.setHttpMethod(mHttpMethod);
 
-		// 以后想扩展，就直接扩展Sender即可
+		// if want to change data access layer fundation , need create a new
+		// Sender , it need to implements ISend
 		mSender = new NetSender(mContext, params, mHttpListener);
 		mSender.send();
 	}

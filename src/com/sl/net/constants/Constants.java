@@ -13,15 +13,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+
 package com.sl.net.constants;
 
 /**
- * NetFoundation中用到的常量
+ * Constants
  * 
  * @author Stephen
  *
  */
 public class Constants {
-	/** 空字符串  */
 	public static final String EMPTY_STR = "";
 }

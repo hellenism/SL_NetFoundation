@@ -1,4 +1,4 @@
-package demos.activities;
+package com.demos.activities;
 
 import java.net.HttpURLConnection;
 
@@ -15,12 +15,10 @@ import android.widget.Button;
 import android.widget.Toast;
 
 /**
- * 通过让Activity实现IHttpListener接口使用
- * 
- * 这样可以定义个BaseActivity,集中处理HTTP回调
+ * Demo 2 : if your activity have many http request and you want to dispose
+ * callback on same methods , your activity implements IHttpListener
  * 
  * @author Stephen
- * 
  */
 public class SecondActivity extends Activity implements IHttpListener {
 
@@ -34,7 +32,6 @@ public class SecondActivity extends Activity implements IHttpListener {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				NetAction netAction = new NetAction(SecondActivity.this, SecondActivity.this);
 				String urlString = "http://mlife.cmbchina.com/Merchant/movie_ticket/ticket/v4/film/coming_films_list.json";
 				netAction.execute(urlString, null);
@@ -46,7 +43,6 @@ public class SecondActivity extends Activity implements IHttpListener {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 
 			}
 		});
