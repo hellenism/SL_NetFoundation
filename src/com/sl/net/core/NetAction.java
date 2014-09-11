@@ -28,17 +28,21 @@ import com.sl.net.interfaces.IHttpListener;
  * 
  */
 public class NetAction extends NetActionBase {
-	private static String sHttpMethod = "POST";
-	private static int sConnectTimeout = 15000;
-	private static int sReadTimeout = 15000;
-	private static boolean sIsDebug = false;
+	private enum HttpMethodsEnum {
+		GET, POST
+	}
 
-	private IHttpListener mHttpListener;
-	private String mHttpMethod;
-	private int mConnectTimeout;
-	private int mReadTimeout;
-	private Context mContext;
-	private AbsSender mSender;
+	private static String	sHttpMethod		= "POST";
+	private static int		sConnectTimeout	= 15000;
+	private static int		sReadTimeout	= 15000;
+	private static boolean	sIsDebug		= false;
+
+	private IHttpListener	mHttpListener;
+	private String			mHttpMethod;
+	private int				mConnectTimeout;
+	private int				mReadTimeout;
+	private Context			mContext;
+	private AbsSender		mSender;
 
 	public NetAction(Context context, IHttpListener httpListner) {
 		mHttpListener = httpListner;
@@ -135,5 +139,30 @@ public class NetAction extends NetActionBase {
 		// Sender , it need to implements ISend
 		mSender = new NetSender(mContext, params, mHttpListener);
 		mSender.send();
+	}
+
+	public void executePost(final String urlString, final HashMap<String, String> queryParams) {
+		execute(urlString, queryParams);
+	}
+
+	public void executePost(final String urlString, final HashMap<String, String> queryParams,
+			final HashMap<String, String> headers) {
+		execute(urlString, queryParams, headers);
+	}
+
+	public void executeGet(final String urlString, final HashMap<String, String> queryParams) {
+		NetParams params = new NetParams(urlString, queryParams);
+		params.setConnectTimeout(mConnectTimeout);
+		params.setReadTimeout(mReadTimeout);
+		params.setHttpMethod(HttpMethodsEnum.GET.toString());
+
+		// if want to change data access layer fundation , need create a new
+		// Sender , it need to implements ISend
+		mSender = new NetSender(mContext, params, mHttpListener);
+		mSender.send();
+	}
+
+	public void cancel() {
+		mSender.cancel();
 	}
 }

@@ -31,6 +31,7 @@ import com.sl.net.interfaces.ISend;
 public abstract class AbsSender implements ISend {
 
 	public abstract void send();
+	public abstract void cancel();
 
 	@Override
 	public InputStream getResponseInputStream(String urlString, HashMap<String, String> queryParams) {

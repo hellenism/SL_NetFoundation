@@ -28,7 +28,6 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		NetAction.setDebugModel(true);
 		NetAction netAction = new NetAction(MainActivity.this, new HttpResponseHandler() {
-
 			@Override
 			public void httpSuccess(String responseString, HttpURLConnection connection) {
 				Toast.makeText(MainActivity.this, responseString, Toast.LENGTH_SHORT).show();
@@ -43,11 +42,11 @@ public class MainActivity extends Activity {
 					Toast.makeText(MainActivity.this, "������:" + error.getMessage(), Toast.LENGTH_SHORT).show();
 				}
 			}
-
 		});
 
 		String urlString = "http://mlife.cmbchina.com/Merchant/movie_ticket/ticket/v4/film/coming_films_list.json";
 		netAction.execute(urlString, null);
+		netAction.cancel();
 	}
 
 	@Override
