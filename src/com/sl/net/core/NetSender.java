@@ -195,6 +195,10 @@ public class NetSender extends AbsSender {
 		String urlString = params.getUrlString();
 		HashMap<String, String> queryParams = params.getRequestParams();
 		URL url = createGetMethodURL(urlString, queryParams);
+		
+		LogUtilsNetFoundation.Log("URL String" + urlString);
+		LogUtilsNetFoundation.Log("Query String" + url.getQuery());
+		
 		mConnection = (HttpURLConnection) url.openConnection();
 		mConnection.setConnectTimeout(params.getConnectTimeout());
 		mConnection.setReadTimeout(params.getReadTimeout());
@@ -321,7 +325,7 @@ public class NetSender extends AbsSender {
 			sb.deleteCharAt(sb.length() - 1);
 		}
 
-		return resultString;
+		return sb.toString();
 	}
 
 	@Override
