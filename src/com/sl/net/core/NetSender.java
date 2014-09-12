@@ -196,8 +196,8 @@ public class NetSender extends AbsSender {
 		HashMap<String, String> queryParams = params.getRequestParams();
 		URL url = createGetMethodURL(urlString, queryParams);
 		
-		LogUtilsNetFoundation.Log("URL String" + urlString);
-		LogUtilsNetFoundation.Log("Query String" + url.getQuery());
+		LogUtilsNetFoundation.Log("URL String:" + urlString);
+		LogUtilsNetFoundation.Log("Query String:" + url.getQuery());
 		
 		mConnection = (HttpURLConnection) url.openConnection();
 		mConnection.setConnectTimeout(params.getConnectTimeout());
