@@ -281,15 +281,16 @@ public class NetSender extends AbsSender {
 		String queryString = createQueryString(queryParams);
 
 		if (urlString.contains("?")) {
-			if (urlString.startsWith("?")) {
-				throw new MalformedURLException("urlString is illegal");
-			}
+			
+//			if (urlString.startsWith("?")) {
+//				throw new MalformedURLException("urlString is illegal");
+//			}
 
-			String[] tempStrings = urlString.split("?");
-
-			if (tempStrings.length != 2) {
-				throw new MalformedURLException("urlString is illegal");
-			}
+//			String[] tempStrings = urlString.split("?");
+//
+//			if (tempStrings.length != 2) {
+//				throw new MalformedURLException("urlString is illegal");
+//			}
 
 			urlString += queryString;
 		} else {
