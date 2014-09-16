@@ -10,15 +10,16 @@ import com.sl.net.exception.NetException;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 /**
- * Demo 1: create and send http request by NetAction 
+ * Demo 1: create and send http request by NetAction
  * 
  * @author Stephen
- *
+ * 
  */
 public class MainActivity extends Activity {
 
@@ -44,9 +45,9 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		String urlString = "http://mlife.cmbchina.com/Merchant/movie_ticket/ticket/v4/film/coming_films_list.json";
-		netAction.execute(urlString, null);
-		netAction.cancel();
+		String urlString = "http://download.mobogarden.com/mu3/app/20140912/06/1410483048954/com.facebook.katana.apk";
+		// netAction.execute(urlString, null);
+		netAction.downFilePOST(urlString, null, Environment.getExternalStorageDirectory() + "/facebook.apk");
 	}
 
 	@Override

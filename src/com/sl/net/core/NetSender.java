@@ -1,21 +1,18 @@
 /*
- *  Copyright 2014 Stephen Lee
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Copyright 2014 Stephen Lee
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
 package com.sl.net.core;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -42,7 +39,7 @@ import com.sl.net.utils.Utils;
 
 /**
  * @ClassName {@link NetSender}
- * @Description 
+ * @Description
  * @author Stephen Lee
  * @date 2014-06-17
  */
@@ -65,7 +62,6 @@ public class NetSender extends AbsSender {
 		mHandler = new Handler(mContext.getMainLooper());
 		mNetParams = netParams;
 		mHttpListener = httpListener;
-
 		mWorkThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -78,22 +74,88 @@ public class NetSender extends AbsSender {
 		mWorkThread.start();
 	}
 
-	@SuppressWarnings("deprecation")
+	public void downloadFile(final String filePath) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				download(mNetParams,filePath);
+			}
+		}).start();
+	}
+
 	@Override
 	public void cancel() {
 		try {
-			mWorkThread.stop();
-
+			mHttpListener = null;
+			
 			if (null != mConnection) {
 				mConnection.disconnect();
 			}
-
-			mHttpListener = null;
+			
+			mWorkThread.interrupt();
 		} catch (Exception e) {
 			// ignore
 		}
 	}
 
+	private void download(NetParams params, String filePath) {
+		NetException netException = null;
+		String responseString = EMPTY_STR;
+
+		try {
+			InputStream responseInputStream = getInputStreamFactory(params);
+			FileOutputStream fileOutputStream = null;
+			try {
+				File file = new File(filePath);
+				fileOutputStream = new FileOutputStream(file);
+				byte[] buffer = new byte[1024]; // 最好自动
+				int pos = -1;
+				do {
+					pos = responseInputStream.read(buffer);
+					if (pos <= 0)
+						break;
+					fileOutputStream.write(buffer, 0, pos);
+				} while (true);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				fileOutputStream.close();
+				responseInputStream.close();
+			}
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			netException = new NetException();
+		} catch (SSLVerifyException e) {
+			e.printStackTrace();
+			netException = new NetException();
+		} catch (SocketTimeoutException e) {
+			e.printStackTrace();
+			netException = new NetException(e);
+			netException.setmExceptionCode(ExceptionConstants.TIMEOUT);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			netException = new NetException(e);
+			netException.setmExceptionCode(ExceptionConstants.PERMISSION);
+		} catch (IOException e) {
+			e.printStackTrace();
+
+			if (!Utils.checkNetWorkAvailable(mContext)) {
+				netException = new NetException();
+				netException.setmExceptionCode(ExceptionConstants.NETWORKDISABLE);
+			} else {
+				netException = new NetException(e);
+				netException.setmExceptionCode(ExceptionConstants.IOEXCEPTION);
+			}
+		} finally {
+			if (null != netException) {
+				onHttpFail(params.getConnection(), netException);
+				showLog(params, "onHttpFail:" + netException.getMessage());
+			} else {
+				onHttpSuccess("下载完成", params.getConnection());
+				showLog(params, "onHttpSuccess:" + responseString);
+			}
+		}
+	}
 	/**
 	 * 
 	 * @param params
@@ -160,8 +222,7 @@ public class NetSender extends AbsSender {
 	}
 
 	/**
-	 * Get response data from connection , this is a factory thought NetParams
-	 * object to decided HTTP Method
+	 * Get response data from connection , this is a factory thought NetParams object to decided HTTP Method
 	 * 
 	 * @param urlString
 	 * @return
@@ -195,17 +256,18 @@ public class NetSender extends AbsSender {
 		String urlString = params.getUrlString();
 		HashMap<String, String> queryParams = params.getRequestParams();
 		URL url = createGetMethodURL(urlString, queryParams);
-		
+
 		LogUtilsNetFoundation.Log("URL String:" + urlString);
 		LogUtilsNetFoundation.Log("Query String:" + url.getQuery());
-		
+		LogUtilsNetFoundation.Log("RequestMethod:" + params.getHttpMethod());
+
 		mConnection = (HttpURLConnection) url.openConnection();
 		mConnection.setConnectTimeout(params.getConnectTimeout());
 		mConnection.setReadTimeout(params.getReadTimeout());
 		mConnection.setRequestMethod(params.getHttpMethod());
 		mConnection.setUseCaches(false);
 		mConnection.setDoInput(true);
-		mConnection.setDoOutput(true);
+		mConnection.setDoOutput(false);
 		mConnection.connect();
 		params.setConnection(mConnection);
 		return mConnection.getInputStream();
@@ -266,6 +328,10 @@ public class NetSender extends AbsSender {
 		}
 		params.setConnection(mConnection);
 		return mConnection.getInputStream();
+	}
+
+	public void saveFile(String filePath) {
+
 	}
 
 	// ------ private methods ------

@@ -1,17 +1,12 @@
 /*
- *  Copyright 2014 Stephen Lee
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Copyright 2014 Stephen Lee
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
 package com.sl.net.core;
@@ -77,8 +72,7 @@ public class NetAction extends NetActionBase {
 	}
 
 	/**
-	 * set debug model . if debug model is true , you can get log message on
-	 * LogCat
+	 * set debug model . if debug model is true , you can get log message on LogCat
 	 * 
 	 * @param isDebug
 	 */
@@ -121,19 +115,11 @@ public class NetAction extends NetActionBase {
 		mSender.send();
 	}
 
-	/**
-	 * send http request , you can add http headers
-	 * 
-	 * @param urlString
-	 * @param queryParams
-	 * @param headers
-	 */
-	public void execute(final String urlString, final HashMap<String, String> queryParams,
-			final HashMap<String, String> headers) {
-		NetParams params = new NetParams(urlString, queryParams, headers);
+	public void executePOST(final String urlString, final HashMap<String, String> queryParams) {
+		NetParams params = new NetParams(urlString, queryParams);
 		params.setConnectTimeout(mConnectTimeout);
 		params.setReadTimeout(mReadTimeout);
-		params.setHttpMethod(mHttpMethod);
+		params.setHttpMethod(HttpMethodsEnum.POST.toString());
 
 		// if want to change data access layer fundation , need create a new
 		// Sender , it need to implements ISend
@@ -141,16 +127,20 @@ public class NetAction extends NetActionBase {
 		mSender.send();
 	}
 
-	public void executePost(final String urlString, final HashMap<String, String> queryParams) {
-		execute(urlString, queryParams);
-	}
-
-	public void executePost(final String urlString, final HashMap<String, String> queryParams,
+	public void executePOST(final String urlString, final HashMap<String, String> queryParams,
 			final HashMap<String, String> headers) {
-		execute(urlString, queryParams, headers);
+		NetParams params = new NetParams(urlString, queryParams,headers);
+		params.setConnectTimeout(mConnectTimeout);
+		params.setReadTimeout(mReadTimeout);
+		params.setHttpMethod(HttpMethodsEnum.POST.toString());
+
+		// if want to change data access layer fundation , need create a new
+		// Sender , it need to implements ISend
+		mSender = new NetSender(mContext, params, mHttpListener);
+		mSender.send();
 	}
 
-	public void executeGet(final String urlString, final HashMap<String, String> queryParams) {
+	public void executeGET(final String urlString, final HashMap<String, String> queryParams) {
 		NetParams params = new NetParams(urlString, queryParams);
 		params.setConnectTimeout(mConnectTimeout);
 		params.setReadTimeout(mReadTimeout);
@@ -162,7 +152,40 @@ public class NetAction extends NetActionBase {
 		mSender.send();
 	}
 
+	public void downFileGET(String fullFilePath, final String urlString, final HashMap<String, String> queryParams) {
+		NetParams params = new NetParams(urlString, queryParams);
+		params.setConnectTimeout(mConnectTimeout);
+		params.setReadTimeout(mReadTimeout);
+		params.setHttpMethod(HttpMethodsEnum.GET.toString());
+
+		mSender = new NetSender(mContext, params, mHttpListener);
+		((NetSender) mSender).downloadFile(fullFilePath);
+	}
+
+	public void downFilePOST(final String urlString, final HashMap<String, String> queryParams,
+			final String fullFilePath) {
+		NetParams params = new NetParams(urlString, queryParams);
+		params.setConnectTimeout(mConnectTimeout);
+		params.setReadTimeout(mReadTimeout);
+		params.setHttpMethod(HttpMethodsEnum.POST.toString());
+
+		mSender = new NetSender(mContext, params, mHttpListener);
+		((NetSender) mSender).downloadFile(fullFilePath);
+	}
+
+	public void downFilePOST(final String urlString, final HashMap<String, String> queryParams,
+			final HashMap<String, String> headers, final String fullFilePath) {
+		NetParams params = new NetParams(urlString, queryParams, headers);
+		params.setConnectTimeout(mConnectTimeout);
+		params.setReadTimeout(mReadTimeout);
+		params.setHttpMethod(HttpMethodsEnum.POST.toString());
+
+		mSender = new NetSender(mContext, params, mHttpListener);
+		((NetSender) mSender).downloadFile(fullFilePath);
+	}
+
 	public void cancel() {
+		mHttpListener = null;
 		mSender.cancel();
 	}
 }
