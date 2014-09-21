@@ -78,7 +78,7 @@ public class NetSender extends AbsSender {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				download(mNetParams,filePath);
+				download(mNetParams, filePath);
 			}
 		}).start();
 	}
@@ -87,11 +87,11 @@ public class NetSender extends AbsSender {
 	public void cancel() {
 		try {
 			mHttpListener = null;
-			
+
 			if (null != mConnection) {
 				mConnection.disconnect();
 			}
-			
+
 			mWorkThread.interrupt();
 		} catch (Exception e) {
 			// ignore
@@ -253,6 +253,8 @@ public class NetSender extends AbsSender {
 	 */
 	public InputStream getInputSreamByGet(NetParams params) throws MalformedURLException, IOException,
 			SecurityException {
+		InputStream inputStream = null;
+
 		String urlString = params.getUrlString();
 		HashMap<String, String> queryParams = params.getRequestParams();
 		URL url = createGetMethodURL(urlString, queryParams);
@@ -261,16 +263,23 @@ public class NetSender extends AbsSender {
 		LogUtilsNetFoundation.Log("Query String:" + url.getQuery());
 		LogUtilsNetFoundation.Log("RequestMethod:" + params.getHttpMethod());
 
-		mConnection = (HttpURLConnection) url.openConnection();
-		mConnection.setConnectTimeout(params.getConnectTimeout());
-		mConnection.setReadTimeout(params.getReadTimeout());
-		mConnection.setRequestMethod(params.getHttpMethod());
-		mConnection.setUseCaches(false);
-		mConnection.setDoInput(true);
-		mConnection.setDoOutput(false);
-		mConnection.connect();
-		params.setConnection(mConnection);
-		return mConnection.getInputStream();
+		try {
+			mConnection = (HttpURLConnection) url.openConnection();
+			mConnection.setConnectTimeout(params.getConnectTimeout());
+			mConnection.setReadTimeout(params.getReadTimeout());
+			mConnection.setRequestMethod(params.getHttpMethod());
+			mConnection.setUseCaches(false);
+			mConnection.setDoInput(true);
+			mConnection.setDoOutput(false);
+			mConnection.connect();
+			params.setConnection(mConnection);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return inputStream;
+		}
+
+		inputStream = mConnection.getInputStream();
+		return inputStream;
 	}
 
 	/**
@@ -284,8 +293,9 @@ public class NetSender extends AbsSender {
 	 */
 	public InputStream getInputSreamByPost(NetParams params) throws MalformedURLException, IOException,
 			SSLVerifyException, SecurityException {
-		String urlString = params.getUrlString();
+		InputStream inputStream = null;
 
+		String urlString = params.getUrlString();
 		HashMap<String, String> queryParams = params.getRequestParams();
 		HashMap<String, String> headers = params.getHeaders();
 
@@ -301,33 +311,40 @@ public class NetSender extends AbsSender {
 			}
 		}
 
-		mConnection.setConnectTimeout(params.getConnectTimeout());
-		mConnection.setReadTimeout(params.getReadTimeout());
-		mConnection.setRequestMethod(params.getHttpMethod());
-		mConnection.setUseCaches(false);
-		mConnection.setDoInput(true);
-		mConnection.setDoOutput(true);
-		mConnection.connect();
-		OutputStream outputStream = null;
-
 		try {
-			outputStream = mConnection.getOutputStream();
-			outputStream.write(queryString.getBytes());
+			mConnection.setConnectTimeout(params.getConnectTimeout());
+			mConnection.setReadTimeout(params.getReadTimeout());
+			mConnection.setRequestMethod(params.getHttpMethod());
+			mConnection.setUseCaches(false);
+			mConnection.setDoInput(true);
+			mConnection.setDoOutput(true);
+			mConnection.connect();
+			OutputStream outputStream = null;
+
+			try {
+				outputStream = mConnection.getOutputStream();
+				outputStream.write(queryString.getBytes());
+			} catch (IOException e) {
+				String s = e.getMessage();
+				Pattern p = Pattern.compile("^Hostname '.*' was not verified$");
+				Matcher m = p.matcher(s);
+				if (m.find()) {
+					throw new SSLVerifyException(s);
+				}
+				throw new IOException();
+			} finally {
+				if (outputStream != null) {
+					outputStream.close();
+				}
+			}
+			params.setConnection(mConnection);
 		} catch (IOException e) {
-			String s = e.getMessage();
-			Pattern p = Pattern.compile("^Hostname '.*' was not verified$");
-			Matcher m = p.matcher(s);
-			if (m.find()) {
-				throw new SSLVerifyException(s);
-			}
-			throw new IOException();
-		} finally {
-			if (outputStream != null) {
-				outputStream.close();
-			}
+			e.printStackTrace();
+			return inputStream;
 		}
-		params.setConnection(mConnection);
-		return mConnection.getInputStream();
+
+		inputStream = mConnection.getInputStream();
+		return inputStream;
 	}
 
 	public void saveFile(String filePath) {
@@ -347,16 +364,16 @@ public class NetSender extends AbsSender {
 		String queryString = createQueryString(queryParams);
 
 		if (urlString.contains("?")) {
-			
-//			if (urlString.startsWith("?")) {
-//				throw new MalformedURLException("urlString is illegal");
-//			}
 
-//			String[] tempStrings = urlString.split("?");
-//
-//			if (tempStrings.length != 2) {
-//				throw new MalformedURLException("urlString is illegal");
-//			}
+			// if (urlString.startsWith("?")) {
+			// throw new MalformedURLException("urlString is illegal");
+			// }
+
+			// String[] tempStrings = urlString.split("?");
+			//
+			// if (tempStrings.length != 2) {
+			// throw new MalformedURLException("urlString is illegal");
+			// }
 
 			urlString += queryString;
 		} else {
@@ -415,7 +432,8 @@ public class NetSender extends AbsSender {
 			mHandler.post(new Runnable() {
 				@Override
 				public void run() {
-					mHttpListener.httpSuccess(responseString, connection);
+					if (null != mHttpListener)
+						mHttpListener.httpSuccess(responseString, connection);
 				}
 			});
 		}
@@ -431,7 +449,8 @@ public class NetSender extends AbsSender {
 			mHandler.post(new Runnable() {
 				@Override
 				public void run() {
-					mHttpListener.httpFail(connection, error);
+					if (null != mHttpListener)
+						mHttpListener.httpFail(connection, error);
 				}
 			});
 		}
